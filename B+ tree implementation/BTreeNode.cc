@@ -38,14 +38,12 @@ int BTLeafNode::getKeyCount()
     int keycount = 0;
 
     while (index < index_max){     
-	popBufferEntry(index,buffer,rid,key);
-    //if not null keycount++
-	if( rid.pid == EMNULL ){break;}
-	keycount++;
-	index += SIZE_ENTRY;	
+	     popBufferEntry(index,buffer,rid,key);
+       //if not null keycount++
+	     if( rid.pid == EMNULL ){break;}
+	     keycount++;
+	     index += SIZE_ENTRY;	
     }
-    //test
-   // //cout<<"keycount="<<keycount<<endl;
     return keycount;
 }
 
@@ -64,8 +62,6 @@ void BTLeafNode::popBufferEntry(int index, char* buffer, RecordId& rid, int& key
     rid.sid = *(ptr+(index/intsize)+1);
     key = *(ptr+(index/intsize)+2);
 
-    //test
-   // //cout<<"pid="<<rid.pid<<"sid="<<rid.sid<<"key="<<key<<endl;
 }
 
 //add an entry into buffer 
@@ -97,7 +93,6 @@ RC BTLeafNode::insert(int key, const RecordId& rid)
    
 	//if not find,insert to end of node
 	if(locate(key,eid) != 0){eid=keycount;};
-	////cout<<"leaf insrt key="<<key<<" eid= "<<eid<<"when insert key//cout="<<keycount<<endl;
 	int index = keycount * SIZE_ENTRY - 1;
     
 	//shift entry where key >= searchkey
@@ -142,9 +137,9 @@ RC BTLeafNode::insertAndSplit(int key, const RecordId& rid,
    int index_middle = (int) ((MAX_ENTRY_NUM / 2) );
    int index = index_middle * SIZE_ENTRY;
   
-   ////cout<<"indexmiddle"<<index_middle<<endl;
-
-   if(getKeyCount() < MAX_ENTRY_NUM){return RC_INVALID_FILE_FORMAT;}
+   if(getKeyCount() < MAX_ENTRY_NUM){
+      return RC_INVALID_FILE_FORMAT;
+    }
 
    while(index < (MAX_ENTRY_NUM * SIZE_ENTRY)){
    
@@ -152,7 +147,7 @@ RC BTLeafNode::insertAndSplit(int key, const RecordId& rid,
     popBufferEntry(index,buffer,left_rid,left_key);
     sibling.insert(left_key,left_rid);
     if(index == index_middle * SIZE_ENTRY ) {
-	siblingKey=left_key;  
+      siblingKey=left_key;  
     }
    
     //clear left node 
@@ -160,23 +155,19 @@ RC BTLeafNode::insertAndSplit(int key, const RecordId& rid,
     pushBufferEntry(null_rid, null_key, tmpbuf);
     int i =  index;
     while (i < index + SIZE_ENTRY){
-	buffer[i]=tmpbuf[i-index];
-	i++;
+	     buffer[i]=tmpbuf[i-index];
+	     i++;
     }       
-   index += SIZE_ENTRY;
+    index += SIZE_ENTRY;
    }   
-   //cout<<index<<endl; 
-   sibling.setNextNodePtr(getNextNodePtr());
-   if (key < siblingKey){
-      // //cout<<"insert to left"<<endl; 
-       insert(key, rid);}
-   else{
-      // //cout<<"insert to right"<<endl; 
-       sibling.insert(key, rid);}
-   return 0;    
-   
-   
-    
+  
+    sibling.setNextNodePtr(getNextNodePtr());
+    if (key < siblingKey){
+      insert(key, rid);
+    }else{
+      sibling.insert(key, rid);
+    }
+      return 0;    
 }
 
 /*
@@ -195,17 +186,14 @@ RC BTLeafNode::locate(int searchKey, int& eid)
     int index = 0;
 
     while (index < keycount){
-    	popBufferEntry(index*SIZE_ENTRY,buffer,rid,key);
-	////cout<<"entry"<<index<<"is"<<key<<endl;
-	if(key >= searchKey){
-	    eid=index;
-	    ////cout<<"leaf eid="<<eid<<endl;
-	    return 0;   
-	}
-	index++ ;
+      popBufferEntry(index*SIZE_ENTRY,buffer,rid,key);
+	    if(key >= searchKey){
+	      eid=index;
+	      return 0;   
+      }
+	    index++ ;
     }   
-       ////cout<<"search "<<searchKey<<"leaf eid="<<eid<<endl;
-       // //cout<<"locat key "<<key<<"keycount="<<keycount<<" eid="<<eid<<endl;
+    
     return RC_NO_SUCH_RECORD; 
 }
 
@@ -264,32 +252,18 @@ void BTLeafNode::initialBuffer(){
   int index = 0;
   while (index < MAX_ENTRY_NUM){
 
-       pushBufferEntry(null_rid, null_key, tempbuf);
-
-     int t = 0;
-     while (t < SIZE_ENTRY){
-    	 buffer[index*SIZE_ENTRY+t] = tempbuf[t];
-    	 t++;
-     }
-
-     index++;
+    pushBufferEntry(null_rid, null_key, tempbuf);
+    int t = 0;
+    while (t < SIZE_ENTRY){
+  	  buffer[index*SIZE_ENTRY+t] = tempbuf[t];
+    	t++;
+    }
+    
+    index++;
   }
 
   setNextNodePtr(EMNULL);//next node pointer is null
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -329,15 +303,13 @@ int BTNonLeafNode::getKeyCount()
     int keycount = 0;
     NonLeafEntry entry;
     while (index < index_max){     
-	popBufferEntry(index,buffer,entry);
-	////cout<<"pop entry key="<<entry.key<<"index"<<index<<endl;
-    //if not null keycount++
-	if( entry.key == EMNULL ){break;}
-	keycount++;
-	index += SIZE_ENTRY;	
+	    popBufferEntry(index,buffer,entry);
+	//if not null keycount++
+	    if( entry.key == EMNULL ){break;}
+	    keycount++;
+	    index += SIZE_ENTRY;	
     }
     //test
-   ////cout<<"keycount="<<keycount<<endl;
     return keycount;
  }
 
@@ -354,8 +326,6 @@ void BTNonLeafNode::popBufferEntry(int index, char* buffer, NonLeafEntry& entry)
     entry.key = *(ptr+(index/intsize)+1);
     entry.pid = *(ptr+(index/intsize));
 
-    //test
-    ////cout<<"key="<<entry.key<<"sid="<<entry.pid<<endl;
 }
 
 void BTNonLeafNode::pushBufferEntry( PageId pid, int key, char* buffer){
@@ -378,18 +348,16 @@ RC BTNonLeafNode::insert(int key, PageId pid)
 {   
     int eid;   
     int keycount = getKeyCount();
-    ////cout<<"key//cout"<<keycount<<endl;
     if (keycount == MAX_ENTRY_NUM){return RC_NODE_FULL;}
     
-   
     //if not find,insert to end of node
     if(locate(key,eid) != 0){eid=keycount;};
     int index = keycount * SIZE_ENTRY - 1 + sizeof(int);
     
     //shift entry where key >= searchkey
     while (index >= eid * SIZE_ENTRY + sizeof(int)){
-	buffer[index+SIZE_ENTRY]=buffer[index];
-	index--;
+	    buffer[index+SIZE_ENTRY]=buffer[index];
+	    index--;
     }
     
     //insert key 
@@ -397,8 +365,8 @@ RC BTNonLeafNode::insert(int key, PageId pid)
     pushBufferEntry(pid, key, tmpbuf);
     index =  eid * SIZE_ENTRY + sizeof(int);
     while (index < (eid+1) * SIZE_ENTRY + sizeof(int)){
-	buffer[index]=tmpbuf[index - eid * SIZE_ENTRY - sizeof(int)];
-	index++;
+	    buffer[index]=tmpbuf[index - eid * SIZE_ENTRY - sizeof(int)];
+	    index++;
     }
 
     return 0;    
@@ -413,12 +381,12 @@ RC BTNonLeafNode::locate(int searchKey, int& eid)
     int index = 0;
 
     while (index < keycount){
-	popBufferEntry(index*SIZE_ENTRY,buffer,entry);
-	if(entry.key >= searchKey){
-	    eid=index;
-	    return 0;   
-	}
-	index++ ;
+	    popBufferEntry(index*SIZE_ENTRY,buffer,entry);
+	    if(entry.key >= searchKey){
+	      eid=index;
+	      return 0;   
+	    }
+	    index++ ;
     }     
     return RC_NO_SUCH_RECORD; 
 }
@@ -473,29 +441,30 @@ RC BTNonLeafNode::insertAndSplit(int key, PageId pid, BTNonLeafNode& sibling, in
     popBufferEntry(index+SIZE_ENTRY,buffer,left_entry2);
     
     if(index == index_middle * SIZE_ENTRY ){
-	midKey=left_entry1.key;
-	sibling.initializeRoot(left_entry2.pid,null_key,null_pid);
-  
- 
-
+	    midKey=left_entry1.key;
+	    sibling.initializeRoot(left_entry2.pid,null_key,null_pid);
     }else{
     //copy left node to sibling node
     //popBufferEntry(index,buffer,left_entry1);
-	sibling.insert(left_entry1.key,left_entry2.pid);
+	    sibling.insert(left_entry1.key,left_entry2.pid);
     }
     //clear left node 
-	char tmpbuf[SIZE_ENTRY];
-	pushBufferEntry(null_pid, null_key, tmpbuf);
-	int i =  index + sizeof(int);
-	while (i < index + SIZE_ENTRY + sizeof(int)){
-	buffer[i]=tmpbuf[i-index - sizeof(int)];
-	i++;
+	  char tmpbuf[SIZE_ENTRY];
+	  pushBufferEntry(null_pid, null_key, tmpbuf);
+	  int i =  index + sizeof(int);
+	  while (i < index + SIZE_ENTRY + sizeof(int)){
+	    buffer[i]=tmpbuf[i-index - sizeof(int)];
+	    i++;
     }
-    index += SIZE_ENTRY;
+      index += SIZE_ENTRY;
    }   
    
-   if (key < midKey){insert(key, pid);}
-   else{sibling.insert(key, pid);}
+   if (key < midKey){
+     insert(key, pid);
+   }
+   else{
+      sibling.insert(key, pid);
+   }
 
 
 
@@ -517,13 +486,12 @@ RC BTNonLeafNode::locateChildPtr(int searchKey, PageId& pid)
     int index = 0;
 
     while (index < keycount){
-	popBufferEntry(index*SIZE_ENTRY,buffer,entry);
-	////cout<<"child loca pid="<<entry.pid<<" key="<<entry.key<<"count="<<keycount<<endl;
-	if(entry.key > searchKey){
-	    pid=entry.pid;
-	    return 0;   
-	}
-	index++ ;
+	    popBufferEntry(index*SIZE_ENTRY,buffer,entry);
+	    if(entry.key > searchKey){
+	      pid=entry.pid;
+	      return 0;   
+	    }
+	    index++ ;
     }    
     popBufferEntry(index*SIZE_ENTRY,buffer,entry);
     pid = entry.pid;  
