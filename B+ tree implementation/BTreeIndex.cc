@@ -129,80 +129,83 @@ RC BTreeIndex::recursiveInsert(int stage, int key, PageId& returnPid, int& retur
 	    //if parent node is not full, insert to it and
 	    //write to pagefile and return
 	    rc = nleaf.insert(splitKey,splitPid); 
-	    //cout<<"isnert nlieaf rc="<<rc<<"key "<<splitKey<<"pid "<<splitPid<<endl;
-	    if(rc == 0){return nleaf.write(currPid,pf);}
+	    if(rc == 0){
+	    	return nleaf.write(currPid,pf);
+	    }
 	    //if parent node is full, split and insert
 	    else{
-		BTNonLeafNode sibling;
-		int midKey;
+			BTNonLeafNode sibling;
+			int midKey;
 		//initiate sibling node 
 		//split node and insert
-		sibling.initializeRoot(INITIAL,INITIAL,INITIAL);
-		nleaf.insertAndSplit(splitKey, splitPid, sibling, midKey);
+			sibling.initializeRoot(INITIAL,INITIAL,INITIAL);
+			nleaf.insertAndSplit(splitKey, splitPid, sibling, midKey);
 	   
 		//get sibling node's pid
 		//wirte sibling node to pagefile  
-		PageId sibPid = pf.endPid();
-		sibling.write(sibPid, pf);
+			PageId sibPid = pf.endPid();
+			sibling.write(sibPid, pf);
 		
 		//update old non-leaf node's pointer 
-		nleaf.write(currPid, pf);
-		if(stage == 1){
-		    rc = popedupRoot(currPid, sibPid, midKey);
-		}
-		returnPid = sibPid;
-		returnKey = midKey;
-		return rc;	
+			nleaf.write(currPid, pf);
+			if(stage == 1){
+		    	rc = popedupRoot(currPid, sibPid, midKey);
+			}
+			returnPid = sibPid;
+			returnKey = midKey;
+			return rc;	
 	    
 	    }
 	}
-	else   return rc;
+		else   return rc;
     }
 
     //if arrived leaf node whrere pid=currPid
     else
     {
-	BTLeafNode leaf;
-	leaf.initialBuffer();
-	leaf.read(currPid, pf);
-	rc = leaf.insert(key, rid);
+		BTLeafNode leaf;
+		leaf.initialBuffer();
+		leaf.read(currPid, pf);
+		rc = leaf.insert(key, rid);
    
 	//if this leaf node is not full,write to pagefile and return RC_NODE_FULL
-	if(rc == 0){return leaf.write(currPid,pf);}
+		if(rc == 0){
+			return leaf.write(currPid,pf);
+		}
 	
 	//if leaf node is full, split and insert and
 	// push up the first entry to parent 
-	else{
-	    BTLeafNode sibling;
-	    int key_sibling;
+		else{
+	    	BTLeafNode sibling;
+	    	int key_sibling;
 	    //initiate sibling node 
 	    //split node and insert 
-	    sibling.initialBuffer();
-	    leaf.insertAndSplit(key, rid, sibling, key_sibling);
+	    	sibling.initialBuffer();
+	    	leaf.insertAndSplit(key, rid, sibling, key_sibling);
 	    
 	    //get sibling node's pid
 	    //wirte sibling node to pagefile  
-	    PageId sibPid = pf.endPid();
-	    sibling.write(sibPid, pf);
+	    	PageId sibPid = pf.endPid();
+	    	sibling.write(sibPid, pf);
 	    
 	    //update old leaf node's pointer 
 	    //point to sibling node where pid=sibPid
-	    leaf.setNextNodePtr(sibPid);
-	    leaf.write(currPid, pf);
+	    	leaf.setNextNodePtr(sibPid);
+	    	leaf.write(currPid, pf);
 	    
 	    //return Pid and Key of first entry in sibling
 	    //copy to parent node
-	    returnPid = sibPid;
-	    returnKey = key_sibling;  
+	    	returnPid = sibPid;
+	    	returnKey = key_sibling;  
 	    
 	    //firt push up of a one height B+ tree with full leaf node 
 	    //push up to parent and treeheight++
-	    if(stage == 1){
-	    rc = popedupRoot(currPid, sibPid, key_sibling);
-	    }
+	    	if(stage == 1){
+	    		rc = popedupRoot(currPid, sibPid, key_sibling);
+	    	}
 	    //return RC_NODE_FULL when leaf full and exits non-leaf node
-	    return rc;
-	} 
+	    	return rc;
+		} 
     }
 }
 
