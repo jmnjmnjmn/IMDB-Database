@@ -79,39 +79,33 @@ RC BTreeIndex::close()
 RC BTreeIndex::insert(int key, const RecordId& rid)
 {
    
-   // //cout<<endl<<"/////// in BTreeIndex::insert /////"<<endl;
-    ////cout<<"Insert: rid.sid= "<<rid.sid<<" rid.pid= "<<rid.pid<<" key= "<<key<<" treeHeight="<<treeHeight<<endl;
     RC rc;
     // initialize empty B+ tree and insert
     if (treeHeight == 0 ){
-	BTLeafNode leaf;
-	leaf.initialBuffer();
-	leaf.insert(key,rid);
-	rootPid = pf.endPid();
-	if ( rootPid == 0 ){rootPid++;}
-	rc = leaf.write(rootPid, pf);
-	treeHeight = 1;
-
-	////cout<<"rootPid= "<<rootPid<<endl;
-	return rc;
+		BTLeafNode leaf;
+		leaf.initialBuffer();
+		leaf.insert(key,rid);
+		rootPid = pf.endPid();
+		if ( rootPid == 0 ){
+			rootPid++;
+		}
+		rc = leaf.write(rootPid, pf);
+		treeHeight = 1;
+		return rc;
     }
     else {
-	int returnKey;
-	PageId returnPid;
-	int stage = 1;
+		int returnKey;
+		PageId returnPid;
+		int stage = 1;
 	//recursive insert, update B+ tree 
 	//split leaf nodes and push up to parent 
-	////cout<<"rootPid= "<<rootPid<<endl;
-	recursiveInsert(stage, key, returnPid, returnKey, rid, rootPid);	
+		recursiveInsert(stage, key, returnPid, returnKey, rid, rootPid);	
     }
 }
 
 RC BTreeIndex::recursiveInsert(int stage, int key, PageId& returnPid, int& returnKey, const RecordId& rid, PageId currPid)
 {
 
-     ////cout<<endl<<"/////// in BTreeIndex::recursiveInsert /////"<<endl;
-     //cout<<"recursive insert stage="<<stage<<" treeHeight="<<treeHeight<<" key= "<<key<<"goto pid="<<currPid<<endl;
-    
     RC rc;
     //start from non-leaf node
     if(stage != treeHeight){
@@ -129,7 +123,7 @@ RC BTreeIndex::recursiveInsert(int stage, int key, PageId& returnPid, int& retur
 	//end up with stage = treeheight
 	nleaf.locateChildPtr(key,childPid);
 	rc = recursiveInsert(stage+1,key,splitPid,splitKey,rid,childPid);
-	//cout<<"find childPid"<<childPid<<" afterins rc="<<rc<<endl;
+	
 	//after split leaf node , push up first entry of new leaf node to parent 
 	if( rc == RC_NODE_FULL){
 	    //if parent node is not full, insert to it and
@@ -172,7 +166,7 @@ RC BTreeIndex::recursiveInsert(int stage, int key, PageId& returnPid, int& retur
 	leaf.initialBuffer();
 	leaf.read(currPid, pf);
 	rc = leaf.insert(key, rid);
-       // //cout<<"currPid "<<currPid<<" rc="<<rc<<endl;
+   
 	//if this leaf node is not full,write to pagefile and return RC_NODE_FULL
 	if(rc == 0){return leaf.write(currPid,pf);}
 	
@@ -189,7 +183,6 @@ RC BTreeIndex::recursiveInsert(int stage, int key, PageId& returnPid, int& retur
 	    //get sibling node's pid
 	    //wirte sibling node to pagefile  
 	    PageId sibPid = pf.endPid();
-	   // //cout<<"sibPid"<<sibPid<<"key_sibling"<<key_sibling<<endl;
 	    sibling.write(sibPid, pf);
 	    
 	    //update old leaf node's pointer 
@@ -221,7 +214,6 @@ RC BTreeIndex::popedupRoot(PageId leftPid, PageId rightPid, int key)
     RC rc = nleaf.write(rootPid, pf); 
     treeHeight++;
  
-   // //cout<<":popedupRoot  rootPid"<<rootPid<<"treeHeight="<<treeHeight<<endl;
     return rc; 
 }
 
@@ -252,18 +244,13 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor)
     nleaf.initializeRoot(INITIAL,INITIAL,INITIAL);
     PageId pid = rootPid;
 
-  // //cout<<"locate rootpid"<<pid<<endl; 
-    //find the 
+  
     for(int stage =1 ; stage < treeHeight; stage++){
 	//if B+ tree not exits, return 
-
-	rc = nleaf.read(pid, pf);
-	////cout<<"searchkey"<<searchKey<<"stage"<<stage<<" tree"<<treeHeight<<" pid"<<pid<<" rc"<<rc<<endl;
-	if(rc != 0) return rc;
+		rc = nleaf.read(pid, pf);
+		if(rc != 0) return rc;
 	//update pid, go to child node until leaf node
-	rc = nleaf.locateChildPtr(searchKey,pid);
-
-     	////cout<<"locate child pid"<<pid<<endl; 
+		rc = nleaf.locateChildPtr(searchKey,pid);
     } 
 
     BTLeafNode leaf;
@@ -271,15 +258,11 @@ RC BTreeIndex::locate(int searchKey, IndexCursor& cursor)
     leaf.initialBuffer();
     leaf.read(pid, pf);
     rc = leaf.locate(searchKey,eid);
-    ////cout<<"locate searchKey"<<searchKey<<"eid"<<eid<<"rc"<<rc<<endl;
-    //if not found entry return error code 
+        //if not found entry return error code 
     if(rc !=0 ) return rc;
-
     cursor.eid = eid;
     cursor.pid = pid;
-        ////cout<<"ceid"<< cursor.eid<<"cpid"<< cursor.pid<<endl;
     return 0;
-
 
 }
 
@@ -304,11 +287,11 @@ RC BTreeIndex::readForward(IndexCursor& cursor, int& key, RecordId& rid)
     
     eid++;
     if (eid >= leaf.getKeyCount()){
-	cursor.pid = leaf.getNextNodePtr();
-	cursor.eid = 0;
-	return 0;
+		cursor.pid = leaf.getNextNodePtr();
+		cursor.eid = 0;
+		return 0;
     }else{
-	cursor.eid = eid;
-	return 0;    
+		cursor.eid = eid;
+		return 0;    
     }
 }
