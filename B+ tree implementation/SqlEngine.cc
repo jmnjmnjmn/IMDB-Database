@@ -328,7 +328,8 @@ RC SqlEngine::parseLoadLine(const string& line, int& key, string& value)
     // get the value string
     value.assign(s);
     loc = value.find(c, 0);
-    if (loc != string::npos) { value.erase(loc); }
-
+    if (loc != string::npos) { 
+      value.erase(loc); 
+    }
     return 0;
 }
