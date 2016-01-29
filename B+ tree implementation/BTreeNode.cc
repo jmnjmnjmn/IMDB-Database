@@ -411,9 +411,7 @@ RC BTNonLeafNode::insertAndSplit(int key, PageId pid, BTNonLeafNode& sibling, in
 
    int index_middle = (int) ((MAX_ENTRY_NUM / 2) );
    int index = index_middle * SIZE_ENTRY;
-   //cout<<"nonleaf split key="<<key<<" pid="<<pid<<"mid="<<index_middle<<"getKeycount="<<getKeyCount()<<endl;  
-   
-   
+      
    // popBufferEntry(0,buffer,left_entry);
     ////cout<<"index"<<index<<"left.key"<<left_entry.key<<" pid="<<left_entry.pid<<endl;
 
@@ -515,7 +513,7 @@ RC BTNonLeafNode::initializeRoot(PageId pid1, int key, PageId pid2)
 	    index++;
     }
     //ptr_char = (char*) ptr;
-    //  NonLeafEntry entry1,entry2,entry3;
+    //NonLeafEntry entry1,entry2,entry3;
     //insert pid1, key , pid2
     *(ptr) = pid1;
     *(ptr+1) = key;

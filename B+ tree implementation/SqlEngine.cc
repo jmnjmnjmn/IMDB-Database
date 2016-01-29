@@ -62,23 +62,19 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
   if(b.open(table+".idx",'r') == 0){ 
 
     for(int i = 0; i < cond.size(); i++){ 
-      if(cond[i].attr != 1) 
-        continue;
+      if(cond[i].attr != 1) continue;
       else if(cond[i].comp == SelCond::EQ){
         getkey = atoi(cond[i].value);
         break;
-      }
-      else if(cond[i].comp == SelCond::GE){
+      }else if(cond[i].comp == SelCond::GE){
         if(getkey == 0){
           getkey = atoi(cond[i].value);
           continue;
         }
         int compare = atoi(cond[i].value);
-        if(compare > getkey)
-          getkey = compare;
+        if(compare > getkey) getkey = compare;
         
-      }
-      else if(cond[i].comp == SelCond::GT){
+      }else if(cond[i].comp == SelCond::GT){
         if(getkey == 0){
           getkey = atoi(cond[i].value);
           continue;
@@ -176,33 +172,33 @@ RC SqlEngine::select(int attr, const string& table, const vector<SelCond>& cond)
         // compute the difference between the tuple value and the condition value
         switch (cond[i].attr) {
         case 1:
-    diff = key - atoi(cond[i].value);
-    break;
+          diff = key - atoi(cond[i].value);
+          break;
         case 2:
-    diff = strcmp(value.c_str(), cond[i].value);
-    break;
+          diff = strcmp(value.c_str(), cond[i].value);
+          break;
         }
 
         // skip the tuple if any condition is not met
         switch (cond[i].comp) {
         case SelCond::EQ:
-    if (diff != 0) goto next_tuple;
-    break;
+          if (diff != 0) goto next_tuple;
+          break;
         case SelCond::NE:
-    if (diff == 0) goto next_tuple;
-    break;
+          if (diff == 0) goto next_tuple;
+          break;
         case SelCond::GT:
-    if (diff <= 0) goto next_tuple;
-    break;
+          if (diff <= 0) goto next_tuple;
+          break;
         case SelCond::LT:
-    if (diff >= 0) goto next_tuple;
-    break;
+          if (diff >= 0) goto next_tuple;
+          break;
         case SelCond::GE:
-    if (diff < 0) goto next_tuple;
-    break;
+          if (diff < 0) goto next_tuple;
+          break;
         case SelCond::LE:
-    if (diff > 0) goto next_tuple;
-    break;
+          if (diff > 0) goto next_tuple;
+          break;
         }
       }
 
