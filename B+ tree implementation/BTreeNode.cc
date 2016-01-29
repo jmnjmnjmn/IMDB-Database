@@ -511,8 +511,8 @@ RC BTNonLeafNode::initializeRoot(PageId pid1, int key, PageId pid2)
     int* ptr = (int*) ptr_char;
     int index = 0;
     while (index < MAX_ENTRY_NUM*2){
-	*(ptr+index) = EMNULL;
-	index++;
+	    *(ptr+index) = EMNULL;
+	    index++;
     }
     //ptr_char = (char*) ptr;
     //  NonLeafEntry entry1,entry2,entry3;
