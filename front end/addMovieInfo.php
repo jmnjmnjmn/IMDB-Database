@@ -151,11 +151,8 @@ mysql_close($db_connection);
 
 }
 
-
 ?>
 
-		<hr/>
-				
+		<hr/>				
 	</body>
-
 </html>
