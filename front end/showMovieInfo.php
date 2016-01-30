@@ -8,8 +8,9 @@ $mid = $_GET['mid'];
 
 $db_connection=mysql_connect('localhost',"cs143","");
 mysql_select_db("CS143", $db_connection);
+
 //last,first,dob,genre
- //Director D,MovieGenre MG,MovieDirector MD where M.id=$mid and M.id=MG.mid and M.id=MD.mid and D.id=MD.did";
+//Director D,MovieGenre MG,MovieDirector MD where M.id=$mid and M.id=MG.mid and M.id=MD.mid and D.id=MD.did";
 $showMovieInfo="select title,year,company,rating from Movie where id=$mid";
 $rs = mysql_query($showMovieInfo, $db_connection);
 $row = mysql_fetch_row($rs);

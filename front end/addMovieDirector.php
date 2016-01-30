@@ -44,7 +44,6 @@ Add Success!<br>";
 mysql_close($db_connection);
 
 
-
 ?>
 
 </body>

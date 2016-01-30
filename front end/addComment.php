@@ -16,9 +16,9 @@ $showActorInfo="select title,year from Movie where id=$mid";
 $rs = mysql_query($showActorInfo, $db_connection);
 $row = mysql_fetch_row($rs);
 
-
 echo "<form action=\"./addComment.php\" method=\"GET\">";
 echo "<h3>Add new comment:<br>";
+
 //get movie title year 
 echo "Movie:";
 echo'<select name="mid">';
@@ -58,7 +58,6 @@ Thanks your comment!! We appreciate it!!<br>
 
 echo "</form>";
 mysql_close($db_connection);
-
 
 ?>
 

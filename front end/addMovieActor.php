@@ -32,7 +32,6 @@ echo'</select><br>';
 
 echo "Role :<input type=\"text\" name=\"role\" maxlength=\"50\">";
 echo '<br>';
-
 echo "<INPUT TYPE=\"submit\" VALUE=\"Add it!!\">";
 
 mysql_close($db_connection);
@@ -52,7 +51,5 @@ if($mid = $_GET["mid"]){
 
 
 ?>
-
 </body>
-
 </html>

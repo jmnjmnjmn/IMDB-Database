@@ -79,9 +79,6 @@ if($first = $_GET["first"]){
 
 }
 ?>
-
-		<hr/>
-				
+		<hr/>			
 	</body>
-
 </html>
